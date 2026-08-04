@@ -1,17 +1,38 @@
 import os
 import shutil
+import sys
 
-ruta = "C:/Users/TuUsuario/Downloads"
+EXTENSIONES = {
+    ".pdf": "PDF",
+    ".jpg": "Imagenes",
+    ".jpeg": "Imagenes",
+    ".png": "Imagenes",
+    ".docx": "Word",
+    ".xlsx": "Excel",
+    ".mp3": "Audio",
+    ".zip": "Comprimidos",
+}
+
+if len(sys.argv) < 2:
+    print("Uso: python organizador.py <ruta_carpeta>")
+    sys.exit(1)
+
+ruta = sys.argv[1]
 
 for archivo in os.listdir(ruta):
-    if archivo.endswith(".pdf"):
-        carpeta = "PDF"
-    elif archivo.endswith(".jpg") or archivo.endswith(".png"):
-        carpeta = "Imagenes"
-    else:
+    ruta_archivo = os.path.join(ruta, archivo)
+    if not os.path.isfile(ruta_archivo):
         continue
 
-    if not os.path.exists(os.path.join(ruta, carpeta)):
-        os.makedirs(os.path.join(ruta, carpeta))
+    _, extension = os.path.splitext(archivo)
+    extension = extension.lower()
 
-    shutil.move(os.path.join(ruta, archivo), os.path.join(ruta, carpeta, archivo))
+    carpeta = EXTENSIONES.get(extension)
+    if carpeta is None:
+        continue
+
+    ruta_carpeta = os.path.join(ruta, carpeta)
+    if not os.path.exists(ruta_carpeta):
+        os.makedirs(ruta_carpeta)
+
+    shutil.move(ruta_archivo, os.path.join(ruta_carpeta, archivo))
